@@ -90,11 +90,13 @@ class QbittorrentMetricsCollector:
 
     def get_status_metrics(self):
         response = {}
+        response_for_alltime = {}
         version = ""
 
         # Fetch data from API
         try:
             response = self.client.transfer.info
+            response_for_alltime = self.client.sync.maindata()['server_state']
         except Exception as e:
             logger.error(f"[{self.name}] Couldn't get server info: {e}")
 
@@ -106,8 +108,8 @@ class QbittorrentMetricsCollector:
             },
             {
                 "name": "downloader_download_bytes_total",
-                "value": response.get("dl_info_data", 0),
-                "help": "Data downloaded this session (bytes)",
+                "value": response_for_alltime.get("alltime_dl", 0),
+                "help": "Data downloaded all time (bytes)",
                 "type": "counter",
             },
             {
@@ -117,8 +119,8 @@ class QbittorrentMetricsCollector:
             },
             {
                 "name": "downloader_upload_bytes_total",
-                "value": response.get("up_info_data", 0),
-                "help": "Data uploaded this session (bytes)",
+                "value": response_for_alltime.get("alltime_ul", 0),
+                "help": "Data uploaded all time (bytes)",
                 "type": "counter",
             },
             {
